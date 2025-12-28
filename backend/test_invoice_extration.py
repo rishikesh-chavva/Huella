@@ -1,4 +1,5 @@
 # import libraries
+from http import client
 import os
 from dotenv import load_dotenv
 from azure.core.credentials import AzureKeyCredential
@@ -22,9 +23,12 @@ def analyze_invoice():
         endpoint=endpoint, credential=AzureKeyCredential(key)
     )
 
-    poller = document_intelligence_client.begin_analyze_document(
-        "prebuilt-invoice", AnalyzeDocumentRequest(url_source=invoiceUrl)
-    )
+    with open("sample_docs/sampleInvoice.pdf", "rb") as f:
+        poller = document_intelligence_client.begin_analyze_document(
+            "prebuilt-invoice",
+            document=f
+        )
+
     invoices = poller.result()
 
     if invoices.documents:
